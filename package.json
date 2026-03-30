@@ -1,0 +1,25 @@
+{
+  "name": "salba-assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "bddgen && playwright test --project=e2e",
+    "test:headed": "bddgen && playwright test --headed --workers=1 --project=e2e",
+    "test:ui": "bddgen && playwright test --ui --project=e2e",
+    "report": "playwright show-report",
+    "pw:install": "playwright install",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "Vilius Nedzveckas",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0",
+    "dotenv": "^17.3.1",
+    "playwright-bdd": "^8.5.0",
+    "prettier": "^3.0.0"
+  }
+}
