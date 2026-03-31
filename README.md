@@ -53,6 +53,7 @@ salba-assignment/
 │   └── currency.steps.ts        # Glue code between Gherkin and Page Object Model
 ├── pages/                       # Page Object Model
 │   └── CurrencyTablesPage.ts    # Interactions with xe.com currency tables
+├── test-utils/                  # Shared utility functions and helpers
 ├── .github/workflows/           # CI/CD pipelines
 │   └── playwright.yml           # GitHub Actions configuration
 ├── playwright.config.ts         # Playwright configuration
