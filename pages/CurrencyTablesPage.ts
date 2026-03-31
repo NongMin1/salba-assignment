@@ -31,6 +31,13 @@ export class CurrencyTablesPage {
     await this.page.goto(url);
   }
 
+  async handleCookieBanner() {
+    const acceptButton = this.page.getByRole("button", { name: /Accept/i });
+    await acceptButton
+      .click({ timeout: 5000 })
+      .catch(() => console.log("Cookie banner not found, continuing..."));
+  }
+
   async selectDate(date: string): Promise<void> {
     const [year, month] = date.split("-");
 

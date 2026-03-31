@@ -10,11 +10,11 @@ Given("the user navigates to the historical rates page", async ({ page }) => {
   await currencyTablesPage.navigate();
 });
 
-When("the user selects {string} as the base currency", async ({}, pair: string) => {
+When("the user sets base currency to {string}", async ({}, pair: string) => {
   await currencyTablesPage.selectBaseCurrency(pair);
 });
 
-When("the user selects the date {string}", async ({}, date: string) => {
+When("the user selects historical date {string}", async ({}, date: string) => {
   await currencyTablesPage.selectDate(date);
 });
 

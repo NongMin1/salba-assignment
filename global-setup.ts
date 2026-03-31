@@ -1,4 +1,5 @@
 import { chromium, FullConfig } from "@playwright/test";
+import { CurrencyTablesPage } from "./pages/CurrencyTablesPage";
 
 async function globalSetup(config: FullConfig) {
   const project = config.projects[0];
@@ -6,19 +7,17 @@ async function globalSetup(config: FullConfig) {
 
   if (!baseURL || typeof storageState !== "string") {
     throw new Error(
-      "`baseURL` and `storageState` must be configured in playwright.config.ts for global setup."
+      `Configuration Missing: baseURL is "${baseURL}" and storageState is "${storageState}". ` +
+        "Ensure BASE_URL environment variable is set in your GitHub Actions workflow."
     );
   }
 
   const browser = await chromium.launch();
   const page = await browser.newPage();
+  const currencyTablesPage = new CurrencyTablesPage(page);
 
   await page.goto(baseURL);
-  const acceptButton = page.getByRole("button", { name: "Accept" });
-
-  await acceptButton
-    .click({ timeout: 5000 })
-    .catch(() => console.log("Cookie banner not found, continuing..."));
+  await currencyTablesPage.handleCookieBanner();
 
   await page.context().storageState({ path: storageState });
   await browser.close();
