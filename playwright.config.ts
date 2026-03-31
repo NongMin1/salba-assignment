@@ -42,7 +42,9 @@ export default defineConfig({
     [
       "junit",
       {
-        outputFile: `test-results/junit-${timestamp}.xml`,
+        outputFile: process.env.CI
+          ? "test-results/results.xml"
+          : `test-results/junit-${timestamp}.xml`,
       },
     ],
     ["github"],
