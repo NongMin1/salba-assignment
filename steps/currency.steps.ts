@@ -1,4 +1,6 @@
 import { createBdd } from "playwright-bdd";
+import { CurrencyCode, ExchangeRate } from "../test-utils/types";
+import { logger } from "../test-utils/logger";
 import { expect } from "@playwright/test";
 import { CurrencyTablesPage } from "../pages/CurrencyTablesPage";
 
@@ -11,7 +13,7 @@ Given("the user navigates to the historical rates page", async ({ page }) => {
 });
 
 When("the user sets base currency to {string}", async ({}, pair: string) => {
-  await currencyTablesPage.selectBaseCurrency(pair);
+  await currencyTablesPage.selectBaseCurrency(pair as CurrencyCode);
 });
 
 When("the user selects historical date {string}", async ({}, date: string) => {
@@ -24,10 +26,23 @@ When("the user confirms the selection", async ({}) => {
 
 Then(
   "the rate for {string} should be {string}",
-  async ({}, currencyCode: string, expectedRate: string) => {
+  async ({}, currencyCodeStr: string, expectedRateStr: string) => {
+    const currencyCode = currencyCodeStr as CurrencyCode;
+    const expectedRate = Number.parseFloat(expectedRateStr) as ExchangeRate;
+
+    logger.info(`Verifying rate for ${currencyCode}`, {
+      expected: expectedRate.toString(),
+    });
+
     const actualRate = await currencyTablesPage.getRateForCurrency(currencyCode);
-    expect(actualRate, {
-      message: `Expected exchange rate for ${currencyCode} to be '${expectedRate}', but found '${actualRate}'`,
-    }).toBe(expectedRate);
+    expect(
+      actualRate,
+      `Exchange rate mismatch for ${currencyCode}\n` +
+        `Expected: ${expectedRate}\n` +
+        `Actual: ${actualRate}\n` +
+        `Difference: ${Math.abs(actualRate - expectedRate)}`
+    ).toBe(expectedRate);
+
+    logger.info(`✓ Rate verified for ${currencyCode}`);
   }
 );

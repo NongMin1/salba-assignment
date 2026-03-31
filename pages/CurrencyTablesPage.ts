@@ -1,4 +1,6 @@
 import { Page, Locator } from "@playwright/test";
+import { CurrencyCode, createDateString, ExchangeRate } from "../test-utils/types";
+import { logger } from "../test-utils/logger";
 
 export class CurrencyTablesPage {
   readonly page: Page;
@@ -32,14 +34,18 @@ export class CurrencyTablesPage {
   }
 
   async handleCookieBanner() {
-    const acceptButton = this.page.getByRole("button", { name: /Accept/i });
-    await acceptButton
-      .click({ timeout: 5000 })
-      .catch(() => console.log("Cookie banner not found, continuing..."));
+    try {
+      const acceptButton = this.page.getByRole("button", { name: /Accept/i });
+      await acceptButton.click({ timeout: 5000 });
+      logger.info("✓ Cookie banner dismissed");
+    } catch (error) {
+      logger.info("→ Cookie banner not present (expected behavior) ", { error });
+    }
   }
 
   async selectDate(date: string): Promise<void> {
-    const [year, month] = date.split("-");
+    const validDate = createDateString(date);
+    const [year, month] = validDate.split("-");
 
     await this.dateInput.click();
     await this.yearSelect.selectOption(year);
@@ -48,7 +54,7 @@ export class CurrencyTablesPage {
     await this.dayButton(date).click();
   }
 
-  async selectBaseCurrency(currencyCode: string): Promise<void> {
+  async selectBaseCurrency(currencyCode: CurrencyCode): Promise<void> {
     await this.currencyDropdown.click();
     await this.currencyDropdown.fill(currencyCode);
 
@@ -62,13 +68,28 @@ export class CurrencyTablesPage {
     await this.page.waitForSelector("table tbody tr");
   }
 
-  async getRateForCurrency(targetCurrency: string): Promise<string> {
+  async getRateForCurrency(targetCurrency: CurrencyCode): Promise<ExchangeRate> {
     const row = this.tableRows.filter({
       hasText: targetCurrency,
     });
+
     await row.waitFor({ state: "visible" });
     const rateCell = row.locator("td").nth(1);
     const text = await rateCell.textContent();
-    return text?.trim() || "";
+
+    const rateStr = text?.trim() || "";
+    const rate = Number.parseFloat(rateStr);
+
+    if (Number.isNaN(rate)) {
+      logger.error(`Invalid rate format: ${rateStr}`);
+      throw new Error(`Could not parse rate for ${targetCurrency}: ${rateStr}`);
+    }
+
+    logger.info(`Rate extracted`, {
+      currency: targetCurrency,
+      rate: rate.toString(),
+    });
+
+    return rate as ExchangeRate;
   }
 }

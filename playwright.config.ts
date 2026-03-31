@@ -11,6 +11,8 @@ const testDir = defineBddConfig({
   outputDir: ".features-gen",
 });
 
+const timestamp = new Date().toISOString().slice(0, 10);
+
 export default defineConfig({
   globalSetup: require.resolve("./global-setup.ts"),
   testDir,
@@ -23,13 +25,37 @@ export default defineConfig({
   },
   reporter: [
     ["list"],
-    ["html", { open: "never" }],
-    ["junit", { outputFile: "test-results/playwright-report.xml" }],
+    [
+      "html",
+      {
+        open: "never",
+        outputFolder: `playwright-report/${timestamp}`,
+      },
+    ],
+    [
+      "json",
+      {
+        outputFile: `test-results/test-results-${timestamp}.json`,
+      },
+    ],
+
+    [
+      "junit",
+      {
+        outputFile: `test-results/junit-${timestamp}.xml`,
+      },
+    ],
+    ["github"],
   ],
-  outputDir: "test-results/",
+
+  outputDir: `test-results/${timestamp}`,
+  fullyParallel: true,
+  workers: process.env.CI ? 1 : 4,
   retries: process.env.CI ? 2 : 0,
   timeout: 30 * 1000,
-  workers: process.env.CI ? 1 : undefined,
+  expect: {
+    timeout: 5000,
+  },
   projects: [
     {
       name: "e2e",
