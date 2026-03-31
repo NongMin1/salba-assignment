@@ -34,12 +34,14 @@ Then(
       expected: expectedRate.toString(),
     });
 
-    const actualRate = await currencyTablesPage.getRateForCurrency(currencyCode);
+    const actualRateStr = await currencyTablesPage.getRateForCurrency(currencyCode);
+    const actualRate = Number.parseFloat(actualRateStr);
+
     expect(
       actualRate,
       `Exchange rate mismatch for ${currencyCode}\n` +
         `Expected: ${expectedRate}\n` +
-        `Actual: ${actualRate}\n` +
+        `Actual: ${actualRateStr}\n` +
         `Difference: ${Math.abs(actualRate - expectedRate)}`
     ).toBe(expectedRate);
 
