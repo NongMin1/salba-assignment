@@ -35,7 +35,7 @@ Then(
     });
 
     const actualRateStr = await currencyTablesPage.getRateForCurrency(currencyCode);
-    const actualRate = Number.parseFloat(actualRateStr);
+    const actualRate = Number.parseFloat(actualRateStr as unknown as string);
 
     expect(
       actualRate,
