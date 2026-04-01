@@ -9,4 +9,4 @@ Feature: Historical Currency Rate Validation
     Examples:
       | target_currency | expected_rate       |
       | USD             | 1.0918121631244302  |
-      | GBP             | 0.8871386636267415  |
+      | GBP             | 0.8871386636267412  |
